@@ -29,21 +29,25 @@ const ContactPage = () => {
     setError(null);
 
     try {
-      // Save to Supabase database for records
-      const { error: dbError } = await supabase
-        .from('contact_submissions')
-        .insert([
-          {
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            company: formData.loanType,
-            loan_amount: formData.loanAmount,
-            message: formData.message
-          }
-        ]);
+      // Save to Supabase database for records (if configured)
+      if (supabase) {
+        const { error: dbError } = await supabase
+          .from('contact_submissions')
+          .insert([
+            {
+              name: formData.name,
+              email: formData.email,
+              phone: formData.phone,
+              company: formData.loanType,
+              loan_amount: formData.loanAmount,
+              message: formData.message
+            }
+          ]);
 
-      if (dbError) throw dbError;
+        if (dbError) {
+          console.warn('Supabase insert failed:', dbError);
+        }
+      }
 
       // Send email notification via Web3Forms to gaurang@galafinancegroup.com
       const emailData = {
